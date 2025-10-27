@@ -1,0 +1,4 @@
+=== Versión Secuencial ===
+Rango: 2 a 400000000
+Primos encontrados: 21336326
+Tiempo: 260.809 segundos
