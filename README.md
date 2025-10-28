@@ -53,3 +53,33 @@
 Los siguientes resultados ilustran el comportamiento de los tres *schedules* (`static`, `dynamic`, `guided`) con diferentes cantidades de *chunks* y hilos.
 
 ![Gráfico de Schedules](assets/grafico_schedules.png)
+
+## ⚙️ Gráficos de Speedup y Eficiencia vs Nº de Procesadores
+
+A continuación se presentan los gráficos generados a partir de los resultados experimentales para cada tipo de *schedule*.  
+Estos gráficos permiten analizar cómo varía la **aceleración (Speedup)** y la **eficiencia del paralelismo** al aumentar el número de procesadores.
+
+---
+
+### 🔸 Schedule Static
+![Speedup y Eficiencia - Static](../graficos/Speedup_Eficiencia_Static.png)
+
+---
+
+### 🔸 Schedule Dynamic
+![Speedup y Eficiencia - Dynamic](../graficos/Speedup_Eficiencia_Dynamic.png)
+
+---
+
+### 🔸 Schedule Guided
+![Speedup y Eficiencia - Guided](../graficos/Speedup_Eficiencia_Guided.png)
+
+---
+
+### 🧠 Comentarios Generales
+
+- El **Speedup** aumenta con el número de procesadores, pero tiende a estabilizarse a medida que crecen los hilos debido a la sobrecarga de coordinación.  
+- El **schedule guided** obtiene la mejor eficiencia general, especialmente con `chunk = 1000`, mostrando un balance más adecuado entre carga de trabajo y overhead.  
+- La **eficiencia** disminuye al aumentar el número de procesadores, lo que es esperado en sistemas paralelos reales, debido a la ley de Amdahl y las pérdidas por sincronización.
+
+---
