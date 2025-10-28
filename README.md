@@ -62,17 +62,17 @@ Estos gráficos permiten analizar cómo varía la **aceleración (Speedup)** y l
 ---
 
 ### 🔸 Schedule Static
-![Speedup y Eficiencia - Static](../graficos/Speedup_Eficiencia_Static.png)
+![Speedup y Eficiencia - Static](graficos/Speedup_Eficiencia_Static.png)
 
 ---
 
 ### 🔸 Schedule Dynamic
-![Speedup y Eficiencia - Dynamic](../graficos/Speedup_Eficiencia_Dynamic.png)
+![Speedup y Eficiencia - Dynamic](graficos/Speedup_Eficiencia_Dynamic.png)
 
 ---
 
 ### 🔸 Schedule Guided
-![Speedup y Eficiencia - Guided](../graficos/Speedup_Eficiencia_Guided.png)
+![Speedup y Eficiencia - Guided](graficos/Speedup_Eficiencia_Guided.png)
 
 ---
 
