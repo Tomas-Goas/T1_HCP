@@ -56,8 +56,7 @@ Los siguientes resultados ilustran el comportamiento de los tres *schedules* (`s
 
 ## ⚙️ Gráficos de Speedup y Eficiencia vs Nº de Procesadores
 
-A continuación se presentan los gráficos generados a partir de los resultados experimentales para cada tipo de *schedule*.  
-Estos gráficos permiten analizar cómo varía la **aceleración (Speedup)** y la **eficiencia del paralelismo** al aumentar el número de procesadores.
+A continuación se presentan los gráficos generados a partir de los resultados experimentales para cada tipo de *schedule*. Estos gráficos permiten analizar cómo varía la aceleración (Speedup) y la eficiencia del paralelismo al aumentar el número de procesadores.
 
 ---
 
@@ -76,10 +75,12 @@ Estos gráficos permiten analizar cómo varía la **aceleración (Speedup)** y l
 
 ---
 
-### 🧠 Comentarios Generales
+### 🧠 Análisis de Speedup y Eficiencia vs N° Procesadores
 
-- El **Speedup** aumenta con el número de procesadores, pero tiende a estabilizarse a medida que crecen los hilos debido a la sobrecarga de coordinación.  
-- El **schedule guided** obtiene la mejor eficiencia general, especialmente con `chunk = 1000`, mostrando un balance más adecuado entre carga de trabajo y overhead.  
-- La **eficiencia** disminuye al aumentar el número de procesadores, lo que es esperado en sistemas paralelos reales, debido a la ley de Amdahl y las pérdidas por sincronización.
+En todos los schedules, se observa que el speedup crece al aumentar el número de procesadores, lo cual confirma que el algoritmo se beneficia del paralelismo. Sin embargo, la eficiencia disminuye conforme aumentan los hilos, lo que refleja la pérdida de rendimiento relativo debido a la sobrecarga de sincronización, el costo de dividir las tareas y la parte secuencial del código, lo que es esperado en sistemas paralelos reales debido a la ley de Amdahl como vimos en clases.
 
----
+El schedule static asigna bloques de iteraciones de tamaño fijo a cada hilo, obteniendo speedups desde 4.3x a 6.8x y una eficiencia que cae de 0,55 a 0,43 al duplicar el número de hilos. Esto puede deberse a que los números primos no se distribuyen uniformemente entre los 400 millones a indagar pues los primeros rangos tienen más trabajo al frecuentar más primos que al final, causando que algunos hilos puedan terminar antes esperando el procesamiento de otros. Se puede apreciar que este efecto empeora con un mayor tamaño de chunks pues cada hilo recibe menos bloques con peor granularidad, siendo chunk=10 el caso con un mayor rendimiento para este schedule.
+
+El schedule dynamic por su parte comienza como el static con una asignación fija pero luego reasigna bloques de trabajo a medida que los hilos terminan mejorando el balance de carga. Se puede ver que el speedup mejora ligeramente frente al static al distribuir el trabajo de cada hilo según su disponibilidad pero con el sacrificio de overhead al tener que reasignar estos bloques dinámicamente y asegurar sincronización. Por esta razón, se puede observar que con chunk=10 la ganancia de balance no compensa el costo de reasignación, en cambio con mayor tamaño de chunks se logra un equilibrio más eficiente con un speedup de 7.17x ya que el overhead se equilibra con la flexibilidad de reasignación ante irregularidades en la búsqueda.
+
+Por último, el schedule guided asigna inicialmente bloques grandes y luego los va reduciendo dinámicamente, combinando ambas estrategias antes mencionadas. Se pueden apreciar speedups más altos como 7.28x con 16 hilos y chunk=1000, con este tamaño inicial de chunk se obtienen los mejores resultados tanto en speedup como en eficiencia lo que sugiere ser un tamaño ideal para la búsqueda de primos que son más frecuentes en un comienzo que al final de la búsqueda. Un menor tamaño de chunks aumenta mucho la fragmentación causando mayor sobrecarga, mientras que uno grande no aprovecha efectivamente la estrategia de distribución de bloques.
