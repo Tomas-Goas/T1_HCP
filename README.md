@@ -84,3 +84,16 @@ El schedule static asigna bloques de iteraciones de tamaño fijo a cada hilo, ob
 El schedule dynamic por su parte comienza como el static con una asignación fija pero luego reasigna bloques de trabajo a medida que los hilos terminan mejorando el balance de carga. Se puede ver que el speedup mejora ligeramente frente al static al distribuir el trabajo de cada hilo según su disponibilidad pero con el sacrificio de overhead al tener que reasignar estos bloques dinámicamente y asegurar sincronización. Por esta razón, se puede observar que con chunk=10 la ganancia de balance no compensa el costo de reasignación, en cambio con mayor tamaño de chunks se logra un equilibrio más eficiente con un speedup de 7.17x ya que el overhead se equilibra con la flexibilidad de reasignación ante irregularidades en la búsqueda.
 
 Por último, el schedule guided asigna inicialmente bloques grandes y luego los va reduciendo dinámicamente, combinando ambas estrategias antes mencionadas. Se pueden apreciar speedups más altos como 7.28x con 16 hilos y chunk=1000, con este tamaño inicial de chunk se obtienen los mejores resultados tanto en speedup como en eficiencia lo que sugiere ser un tamaño ideal para la búsqueda de primos que son más frecuentes en un comienzo que al final de la búsqueda. Un menor tamaño de chunks aumenta mucho la fragmentación causando mayor sobrecarga, mientras que uno grande no aprovecha efectivamente la estrategia de distribución de bloques.
+
+### Identificación de la mejor estrategia
+
+
+Mejor estrategia según los resultados es usar schedule guided con 16 hilos y chunk = 1000. Puesto que obtuvo el mejor tiempo absoluto: 35.820 s. Esto se explica puesto que guided combina bloques grandes inicialmente (bajo overhead) y bloques cada vez más pequeños al final (mejor balance donde la carga es irregular), adecuado para la distribución no uniforme de trabajo al buscar primos en [2, 400M).
+
+![Gráfico de Schedules](assets/grafico_schedules.png)
+
+Podemos apreciar que precisamente en 1000 chunks es cuando se obtiene el mejor tiempo.
+Con respecto a la escalabilidad fuerte, hay ganancia real al aumentar núcleos, pero el rendimiento por hilo decae. La mejor combinación observada (guided, chunk=1000) reduce el desequilibrio y el overhead relativo, consiguiendo la mayor aceleración. Sin embargo la eficiencia < 50% a 16 hilos indica limitaciones (parte secuencial, sincronización y coste de reparto de trabajo).
+Por otro lado, en la prueba de escalabilidad débil, el tiempo de ejecución aumentó al incrementar el número de threads (de 31.58 s con 1 hilo a 210.5 s con 16 hilos). Esto indica que el programa no escala débilmente de forma eficiente, ya que, idealmente, el tiempo debería mantenerse casi constante si cada hilo procesa una cantidad similar de trabajo. El incremento observado sugiere la presencia de sobrecarga de sincronización, competencia por recursos compartidos (como memoria o caché) y posibles ineficiencias en la distribución dinámica de trabajo bajo la política schedule(guided, 10).
+
+![Gráfico de escalabilidad debil](assets/weak_time.png)
